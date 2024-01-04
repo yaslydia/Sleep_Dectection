@@ -1,5 +1,4 @@
 import os
-import keras
 
 from keras import backend as K
 from keras.layers import concatenate
@@ -10,7 +9,6 @@ import math
 import random
 from keras import optimizers
 import numpy as np
-import tensorflow as tf
 import scipy.io as spio
 
 from sklearn.metrics import f1_score, accuracy_score
@@ -21,19 +19,11 @@ from keras.models import Sequential
 from keras.layers import Layer,Dense, Dropout, Input, Activation, TimeDistributed, Reshape
 from keras.layers import  GRU, Bidirectional
 from keras.layers import  Conv1D, Conv2D, MaxPooling2D, Flatten, BatchNormalization, LSTM, ZeroPadding2D, GlobalAveragePooling2D, SpatialDropout2D
-from keras.callbacks import History
+from keras.callbacks import History 
 from keras.models import Model
 
-# from keras.layers.noise import GaussianNoise
-
 from collections import Counter
-
-# from sklearn.utils import class_weight
 from sklearn.utils.class_weight import compute_class_weight
-
-
-from sklearn.metrics import f1_score, accuracy_score
-np.random.seed(0)
 
 def build_model(data_dim, n_channels, n_cl):
 	eeg_channels = 1
@@ -47,8 +37,8 @@ def build_model(data_dim, n_channels, n_cl):
 		x = BatchNormalization()(x)
 		x = Activation(act_conv)(x)
 		x = MaxPooling2D(pool_size=(2, 1), padding='same')(x)
-
-
+		
+		
 		x = Conv2D(64, (3, 1), strides=(1, 1), padding='same', kernel_initializer=init_conv)(x)
 		x = BatchNormalization()(x)
 		x = Activation(act_conv)(x)
@@ -66,7 +56,7 @@ def build_model(data_dim, n_channels, n_cl):
 		flatten1 = Flatten()(x)
 		cnn_eeg = Model(inputs=input, outputs=flatten1)
 		return cnn_eeg
-
+		
 	hidden_units1  = 256
 	dp_dense = 0.5
 
