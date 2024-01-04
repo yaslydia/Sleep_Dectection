@@ -9,6 +9,7 @@ import math
 import random
 from keras import optimizers
 import numpy as np
+import tensorflow as tf
 import scipy.io as spio
 
 from sklearn.metrics import f1_score, accuracy_score
