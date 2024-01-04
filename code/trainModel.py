@@ -38,7 +38,7 @@ from utils import *
 
 
 batch_size = 200
-n_ep = 3
+n_ep = 1
 fs  = 200;
 # half_size of the sliding window in samples
 w_len = 8*fs;
@@ -182,7 +182,7 @@ N_steps = 1000
 for i in range(n_ep):
 	print("Epoch = " + str(i))
 	generator_train = my_generator(data_train, targets_train, sample_list)
-	model.fit_generator(generator_train, steps_per_epoch = N_batches,  epochs = 1, verbose=1,  callbacks=[history], initial_epoch=0 )
+	model.fit(generator_train, steps_per_epoch = N_batches,  epochs = 1, verbose=1,  callbacks=[history], initial_epoch=0 )
 	
 	acc_tr.append(history.history['accuracy'])
 	loss_tr.append(history.history['loss'])
@@ -195,9 +195,9 @@ for i in range(n_ep):
 	for j in range(len(data_val)):
 		f = f_list[j]
 		generator_val = my_generator(data_val, targets_val, sample_list_val[j], shuffle = False)
-		scores = model.evaluate( generator_val, int(math.ceil((len(sample_list_val[j],)+0.0)/batch_size)), workers=1)
+		scores = model.evaluate_generator( generator_val, int(math.ceil((len(sample_list_val[j],)+0.0)/batch_size)), workers=1)
 		generator_val = my_generator(data_val, targets_val, sample_list_val[j], shuffle = False)
-		y_pred = model.predict( generator_val, int(math.ceil((len(sample_list_val[j],)+0.0)/batch_size)), workers=1)
+		y_pred = model.predict_generator( generator_val, int(math.ceil((len(sample_list_val[j],)+0.0)/batch_size)), workers=1)
 		val_l.append(len(sample_list_val[j]))
 		print(len(sample_list_val[j]))
 		print(len(targets_val[j][0]))
