@@ -183,11 +183,6 @@ def val_data_to_batch(data, targets):
 Nadam = optimizers.Nadam( )
 model.compile(optimizer=Nadam,  loss='categorical_crossentropy', metrics=['accuracy'], sample_weight_mode=None)
 
-
-
-
-
-
 model.load_weights('/home/cxyycl/scratch/Microsleep-code/code/CNN_16s/model.h5')
 
 y_ = []
