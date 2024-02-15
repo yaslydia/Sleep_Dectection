@@ -97,46 +97,8 @@ def my_generator(data_train, targets_train, sample_list, shuffle = True):
 			batch_targets = to_categorical(batch_targets, n_cl)
 			batch_data1 = (batch_data1 )/100 
 			batch_data1 = np.clip(batch_data1, -1, 1)
-			print(batch_data1.shape,batch_targets.shape)
 			yield [ batch_data1 ], batch_targets
 
-
-def process_data(data_train, targets_train, sample_list, batch_size, n_cl, shuffle=True):
-    if shuffle:
-        random.shuffle(sample_list)
-
-    all_batch_data1 = []
-    all_batch_targets = []
-
-    for batch in batch_generator(sample_list, batch_size):
-        batch_data1 = []
-        #print(batch)
-        #print(111111)
-        batch_targets = []
-        for sample in batch:
-            [f, s, b, e, c] = sample
-            #print(sample)
-            #print(222222)
-            sample_label = targets_train[f][c][s]
-            sample_x1 = data_train[f][c][b:e+1]
-            sample_x2 = data_train[f][2][b:e+1]
-            sample_x = np.concatenate((sample_x1, sample_x2), axis=2)
-            batch_data1.append(sample_x)
-            batch_targets.append(sample_label)
-
-        batch_data1 = np.stack(batch_data1, axis=0)
-        batch_targets = np.array(batch_targets)
-        batch_targets = to_categorical(batch_targets, n_cl)
-        batch_data1 = batch_data1 / 100
-        batch_data1 = np.clip(batch_data1, -1, 1)
-
-        all_batch_data1.append(batch_data1)
-        all_batch_targets.append(batch_targets)
-
-    all_batch_data1 = np.concatenate(all_batch_data1, axis=0)
-    all_batch_targets = np.concatenate(all_batch_targets, axis=0)
-
-    return all_batch_data1, all_batch_targets
 
 n_channels = 3
 
@@ -196,7 +158,7 @@ model.compile(optimizer='Nadam',  loss='categorical_crossentropy', metrics=['acc
 print(cnn_eeg.summary())
 print(model.summary())
 
-print(111111111111111111111111)
+
 
 print(model.metrics_names)
 
@@ -215,16 +177,11 @@ loss_tr = []
 loss_tst = []
 loss_val = []
 N_steps = 1000
-print(len(data_train))
-print(len(data_train[0]))
-#print(data_train[0][0].shape)
-all_batch_data1, all_batch_targets = process_data(data_train, targets_train, sample_list, batch_size, n_cl, shuffle=True)
 
-print(all_batch_data1.shape, all_batch_targets.shape)
+
 for i in range(n_ep):
 	print("Epoch = " + str(i))
 	generator_train = my_generator(data_train, targets_train, sample_list)
-	print(generator_train)
 	model.fit(generator_train, steps_per_epoch = N_batches,  epochs = 1, verbose=1,  callbacks=[history], initial_epoch=0 )
 	
 	acc_tr.append(history.history['accuracy'])
@@ -265,3 +222,46 @@ for i in range(n_ep):
 # model.save('./model.h5')
 
 spio.savemat('/home/cxyycl/scratch/Microsleep-code/code/predictions/predictions.mat', mdict={'val_y': val_y, 'val_y_': val_y_, 'val_l': val_l,  'files_test':files_test, 'files_val':files_val, 'acc_tr': acc_tr, 'loss_tr':loss_tr, 'loss_val':loss_val,  'acc_val':acc_val,  'K_val':K_val  })
+
+###################################保存中间层特征和相应的标签######################################################
+print("Strating.........")
+generator_train = my_generator(data_train, targets_train, sample_list)
+features = []  # 存储特征
+labels = []  # 存储标签
+for batch_index in range(N_batches):
+	feature, label = next(generator_train)
+	print(len(feature),len(label))
+	cnn_eeg_train = cnn_eeg.predict(feature)
+	features.append(cnn_eeg_train)
+	labels.append(label)
+features = np.vstack(features)  # 将特征列表转换为numpy数组
+labels = np.vstack(labels)  # 将标签列表转换为numpy数组
+
+print(features.shape)
+print(labels.shape)
+
+
+# 使用 cnn_eeg 模型预测 data_train 和 data_val，并保存结果
+
+N_batches_val = int(math.ceil(N_samples_val / batch_size))
+generator_val = my_generator(data_val, targets_val, sample_list_val[0], shuffle = False)
+features_val = []  # 存储特征
+labels_val = []  # 存储标签
+for batch_index in range(N_batches_val):
+	feature_val, label_val = next(generator_val)
+	cnn_eeg_val = cnn_eeg.predict(feature_val)
+	features_val.append(cnn_eeg_val)
+	labels_val.append(label_val)
+features_val = np.vstack(features_val)  # 将特征列表转换为numpy数组
+labels_val = np.vstack(labels_val)  # 将标签列表转换为numpy数组
+
+
+print(features_val.shape)
+print(labels_val.shape)
+
+np.save('/home/cxyycl/scratch/Microsleep-code/code/predictions/features.npy', features)
+np.save('/home/cxyycl/scratch/Microsleep-code/code/predictions/labels.npy', labels)
+np.save('/home/cxyycl/scratch/Microsleep-code/code/predictions/features_val.npy', features_val)
+np.save('/home/cxyycl/scratch/Microsleep-code/code/predictions/labels_val.npy', labels_val)
+
+###################################保存中间层特征和相应的标签######################################################
