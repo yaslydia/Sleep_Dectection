@@ -230,7 +230,7 @@ features = []  # 存储特征
 labels = []  # 存储标签
 for batch_index in range(N_batches):
 	feature, label = next(generator_train)
-	# print(len(feature),len(label))
+	print(len(feature),len(label))
 	cnn_eeg_train = cnn_eeg.predict(feature)
 	features.append(cnn_eeg_train)
 	labels.append(label)
