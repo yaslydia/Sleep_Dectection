@@ -13,9 +13,9 @@ source ~/tensor/bin/activate
 
 pip install /scratch/cxyycl/raybnn_python-0.1.2-cp311-cp311-linux_x86_64.whl
 
-# python /home/cxyycl/scratch/Microsleep-code/code/loadData.py
-# python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/myModel.py
-# python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/train_test.py
-#python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/predict_val.py
-#python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/predict_test.py
+python /home/cxyycl/scratch/Microsleep-code/code/loadData.py
+python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/myModel.py
+python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/train_test.py
+python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/predict_val.py
+python /home/cxyycl/scratch/Microsleep-code/code/CNN_16s/predict_test.py
 python /scratch/cxyycl/RayBNN_Python-main/Rust_Code/run_network_RayBNN_SLEEP_copy.py
